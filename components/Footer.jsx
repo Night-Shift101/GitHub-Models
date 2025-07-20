@@ -127,19 +127,19 @@ export default function Footer() {
           <div className="md:flex md:items-center md:justify-between">
             <div className="flex space-x-6 md:order-2">
               <a
-                href="#privacy"
+                href="https://github.com/Night-Shift101/GitHub-Models/blob/main/docs/privacy-policy.md"
                 className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
               >
                 Privacy Policy
               </a>
               <a
-                href="#terms"
+                href="https://github.com/Night-Shift101/GitHub-Models/blob/main/docs/terms-of-service.md"
                 className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
               >
                 Terms of Service
               </a>
               <a
-                href="#code-of-conduct"
+                href="https://github.com/Night-Shift101/GitHub-Models/blob/main/docs/code-of-conduct.md"
                 className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
               >
                 Code of Conduct
