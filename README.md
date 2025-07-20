@@ -1,3 +1,4 @@
+![Next.js](https://img.shields.io/badge/Next.js-14.2.5-black?style=for-the-badge&logo=next.js) ![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.7-38B2AC?style=for-the-badge&logo=tailwind-css) ![Built with Claude](https://img.shields.io/badge/Built_with_Help-Claude_Sonnet-FF6B35?style=for-the-badge&logo=anthropic) ![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=for-the-badge)
 # 🤖 JSDoc vs TypeScript: The Ultimate AI Debate
 
 > **Portfolio-worthy AI integration showcasing advanced GitHub Models + OpenAI SDK implementation**
