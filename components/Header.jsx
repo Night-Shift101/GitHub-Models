@@ -9,7 +9,6 @@ import { useState, useEffect } from 'react';
  */
 export default function Header() {
   const [isDark, setIsDark] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Handle dark mode initialization and persistence
   useEffect(() => {
