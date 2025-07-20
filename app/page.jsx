@@ -1,100 +1,222 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import AddReasonForm from '../components/AddReasonForm.jsx';
+import ReasonCard from '../components/ReasonCard.jsx';
+import { loadReasons, saveReasons, addReason } from '../lib/storage.js';
+
 /**
- * Homepage component - customize this for your project
+ * JSDoc vs TypeScript debate platform homepage
  * @returns {JSX.Element}
  * @author Your Name
  */
 export default function HomePage() {
+  const [reasons, setReasons] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load reasons from localStorage on component mount
+  useEffect(() => {
+    const loadStoredReasons = async () => {
+      try {
+        const result = await loadReasons();
+        if (result.success && Array.isArray(result.data)) {
+          setReasons(result.data);
+        }
+      } catch (err) {
+        console.error('Failed to load stored reasons:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadStoredReasons();
+  }, []);
+
+  /**
+   * Handle adding a new reason or clearing all reasons
+   * @param {Object|null} newReason - The new reason object, or null to clear all
+   * @param {boolean} clearAll - Whether to clear all reasons
+   */
+  const handleReasonAdded = async (newReason, clearAll = false) => {
+    try {
+      if (clearAll) {
+        // Clear all reasons
+        const result = await saveReasons([]);
+        if (result.success) {
+          setReasons([]);
+        }
+      } else if (newReason) {
+        // Add new reason
+        const result = await addReason(newReason);
+        if (result.success) {
+          setReasons(result.data);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to update reasons:', err);
+    }
+  };
+
+  /**
+   * Handle removing a specific reason
+   * @param {number} index - Index of the reason to remove
+   */
+  const handleRemoveReason = async (index) => {
+    try {
+      const newReasons = reasons.filter((_, i) => i !== index);
+      const result = await saveReasons(newReasons);
+      if (result.success) {
+        setReasons(newReasons);
+      }
+    } catch (err) {
+      console.error('Failed to remove reason:', err);
+    }
+  };
+
   return (
-    <div className="animate-fade-in">
+    <main className="min-h-screen bg-white dark:bg-gray-900">
       {/* Hero Section */}
-      <section className="text-center py-12 md:py-20">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary-600 to-primary-900 bg-clip-text text-transparent">
-            Welcome to Your Project
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-            A modern Next.js template with Tailwind CSS, dark mode, and best practices built-in
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-              Get Started
-              <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-            <button className="inline-flex items-center px-6 py-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-              Learn More
-            </button>
-          </div>
-        </div>
-      </section>
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+          <div className="text-center">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 text-sm font-medium mb-6">
+              <span className="w-2 h-2 bg-amber-500 rounded-full mr-2 animate-pulse"></span>
+              AI-Powered Debate Platform
+            </div>
+            
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4">
+              JSDoc vs
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+                TypeScript
+              </span>
+            </h1>
+            
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-6">
+              🔥 <strong>The Ultimate Showdown</strong> - Discover why JSDoc is the superior choice for JavaScript projects. 
+              Let AI generate compelling arguments that will change how you think about type safety.
+            </p>
 
-      {/* Features Section */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-800 -mx-4 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Template Features
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 animate-slide-up">
-              <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-8">
+              <span className="flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
                 </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Next.js 14</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Latest Next.js with App Router, static export capabilities, and excellent performance out of the box.
-              </p>
+                AI Generated
+              </span>
+              <span className="flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                Locally Stored
+              </span>
+              <span className="flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                Portfolio Showcase
+              </span>
             </div>
 
-            {/* Feature 2 */}
-            <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Tailwind CSS</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Utility-first CSS framework with dark mode support, custom design system, and responsive design.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Developer Ready</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                ESLint, error handling patterns, TypeScript ready, and comprehensive documentation included.
+            <div className="bg-gradient-to-r from-yellow-50 to-red-50 dark:from-yellow-900/20 dark:to-red-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 max-w-2xl mx-auto">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                ⚠️ <strong>Disclaimer:</strong> This is a provocative AI experiment designed to showcase advanced integration skills. 
+                TypeScript fans, prepare to question everything you thought you knew! 😉
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="py-16 text-center">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Build Something Amazing?
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
-            This template includes everything you need to start building modern web applications with Next.js and Tailwind CSS.
-          </p>
-          <button className="inline-flex items-center px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white text-lg rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-            Start Building
-            <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+      {/* Content Section */}
+      <section className="py-12 bg-gray-50 dark:bg-gray-800">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Add Reason Form */}
+          <AddReasonForm 
+            existingReasons={reasons}
+            onReasonAdded={handleReasonAdded}
+          />
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <p className="mt-2 text-gray-600 dark:text-gray-300">Loading reasons...</p>
+            </div>
+          )}
+
+          {/* Reasons List */}
+          {!isLoading && (
+            <>
+              {reasons.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="mb-4">
+                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2m16-7a2 2 0 01-2 2H6a2 2 0 01-2-2m0 0V9a2 2 0 012-2h12a2 2 0 012 2v4z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    No Reasons Yet
+                  </h3>
+                  <p className="text-gray-500 dark:text-gray-400 mb-6">
+                    Click the button above to let AI generate compelling reasons why JSDoc is better than TypeScript!
+                  </p>
+                  <div className="text-sm text-gray-400 dark:text-gray-500">
+                    💡 Each reason is AI-generated and unique - no duplicates allowed!
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      🏆 Why JSDoc Dominates TypeScript
+                    </h2>
+                    <div className="bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded-full">
+                      <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                        {reasons.length} Strong Argument{reasons.length !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-6">
+                    {reasons.map((reason, index) => (
+                      <ReasonCard
+                        key={`${reason.timestamp}-${index}`}
+                        reason={reason}
+                        index={index}
+                        onRemove={handleRemoveReason}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Battle Stats */}
+                  <div className="mt-12 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6 text-center">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      🎯 Battle Statistics
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                          {reasons.length}
+                        </div>
+                        <div className="text-gray-600 dark:text-gray-300">JSDoc Wins</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-red-600 dark:text-red-400">0</div>
+                        <div className="text-gray-600 dark:text-gray-300">TypeScript Wins</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">∞</div>
+                        <div className="text-gray-600 dark:text-gray-300">More Arguments Available</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </section>
-    </div>
+    </main>
   );
 }
